@@ -1,0 +1,1 @@
+The sample IFC File was taken from [buildingSMART/Sample-Test-Files](https://github.com/buildingSMART/Sample-Test-Files)
