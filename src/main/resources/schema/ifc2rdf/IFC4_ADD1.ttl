@@ -18400,7 +18400,7 @@ ifc:IfcRoot  a           owl:Class ;
         dce:title                      "IFC4_ADD1" ;
         vann:preferredNamespacePrefix  "ifc" ;
         vann:preferredNamespaceUri     "http://ifcowl.openbimstandards.org/IFC4_ADD1" ;
-        owl:imports                    <http://purl.org/voc/express> .
+        owl:imports                    <https://pi.pauwel.be/voc/express/20151211/express.ttl> .
 
 ifc:sectionDefinition_IfcSectionReinforcementProperties
         a            owl:ObjectProperty , owl:FunctionalProperty ;

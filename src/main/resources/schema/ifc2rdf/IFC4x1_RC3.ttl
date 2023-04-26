@@ -15604,7 +15604,7 @@ ifc:ERECTING  a     ifc:IfcConstructionEquipmentResourceTypeEnum , owl:NamedIndi
         dce:title                      "IFC4x1_RC3" ;
         vann:preferredNamespacePrefix  "ifc" ;
         vann:preferredNamespaceUri     "http://ifcowl.openbimstandards.org/IFC4x1_RC3" ;
-        owl:imports                    <http://purl.org/voc/express> .
+        owl:imports                    <https://pi.pauwel.be/voc/express/20151211/express.ttl> .
 
 ifc:NULL  a         ifc:IfcNullStyle , owl:NamedIndividual ;
         rdfs:label  "NULL" .

@@ -23338,7 +23338,7 @@ ifc:COMPRESSION_MEMBER
         dce:title                      "IFC2X3_TC1" ;
         vann:preferredNamespacePrefix  "ifc" ;
         vann:preferredNamespaceUri     "http://ifcowl.openbimstandards.org/IFC2X3_TC1" ;
-        owl:imports                    <http://purl.org/voc/express> .
+        owl:imports                    <https://pi.pauwel.be/voc/express/20151211/express.ttl> .
 
 ifc:refDirection_IfcAxis2Placement2D
         a            owl:ObjectProperty , owl:FunctionalProperty ;

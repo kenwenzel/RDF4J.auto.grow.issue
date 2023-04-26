@@ -33419,7 +33419,7 @@ ifc:IfcTemperatureRateOfChangeMeasure
         dce:title                      "IFC4" ;
         vann:preferredNamespacePrefix  "ifc" ;
         vann:preferredNamespaceUri     "http://ifcowl.openbimstandards.org/IFC4" ;
-        owl:imports                    <http://purl.org/voc/express> .
+        owl:imports                    <https://pi.pauwel.be/voc/express/20151211/express.ttl> .
 
 ifc:ASSISTEDSTEAM  a  ifc:IfcHumidifierTypeEnum , owl:NamedIndividual ;
         rdfs:label  "ASSISTEDSTEAM" .

@@ -13553,7 +13553,7 @@ ifc:IfcClassification
         dce:title                      "IFC2X3_Final" ;
         vann:preferredNamespacePrefix  "ifc" ;
         vann:preferredNamespaceUri     "http://ifcowl.openbimstandards.org/IFC2X3_Final" ;
-        owl:imports                    <http://purl.org/voc/express> .
+        owl:imports                    <https://pi.pauwel.be/voc/express/20151211/express.ttl> .
 
 ifc:IfcCompressorType
         a                 owl:Class ;
