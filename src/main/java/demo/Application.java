@@ -53,6 +53,7 @@ public class Application {
       logMessage("First transaction start");
       connection.begin();
 
+      logMessage("Adding data to connection");
       var factory = SimpleValueFactory.getInstance();
       IRI context = factory.createIRI(graph);
       InputStream inputStream = new ByteArrayInputStream(rdfModel.getBytes());
@@ -77,9 +78,10 @@ public class Application {
       logMessage("Writing updated named graph");
       connection.begin();
 
-      // delete context
+      logMessage("Clearing context");
       connection.clear(context);
 
+      logMessage("Adding data to connection");
       inputStream = new ByteArrayInputStream(rdfModelUpdated.getBytes());
       connection.add(inputStream, RDFFormat.TURTLE, context);
 

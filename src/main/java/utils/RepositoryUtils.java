@@ -9,11 +9,9 @@ import org.eclipse.rdf4j.repository.manager.RepositoryProvider;
 import org.eclipse.rdf4j.repository.sail.config.SailRepositoryConfig;
 import org.eclipse.rdf4j.sail.lmdb.config.LmdbStoreConfig;
 
-
 /** Utilities for repositories to be accessed over a RDF4J server */
 public class RepositoryUtils {
   private final RepositoryManager repositoryManager;
-
 
   /** Generates a new {@link RepositoryUtils} and primes the connection to the RDF4J Server */
   public RepositoryUtils(String rdf4jServerURL) {
@@ -30,8 +28,7 @@ public class RepositoryUtils {
    * @throws RepositoryConfigException If no {@link Repository} could be created due to invalid or
    *     incomplete configuration data.
    */
-  public Repository getRepository(String repositoryId)
-      throws RepositoryConfigException {
+  public Repository getRepository(String repositoryId) throws RepositoryConfigException {
     return this.repositoryManager.getRepository(repositoryId);
   }
 
@@ -42,8 +39,7 @@ public class RepositoryUtils {
    * @param repositoryId Id of repository
    * @throws IllegalArgumentException If the given params are already a repo
    */
-  public void createRepository(String repositoryId)
-      throws IllegalArgumentException {
+  public void createRepository(String repositoryId) throws IllegalArgumentException {
     if (getRepository(repositoryId) != null) {
       throw new IllegalArgumentException("Repository already exists.");
     }
@@ -52,22 +48,14 @@ public class RepositoryUtils {
     // the repo will be auto created if a config exist for it, and it's called the first time
     LmdbStoreConfig lmdbConfig = new LmdbStoreConfig();
 
+    // set initial size of the database to fox issues
+    // final long initialDBSize = 3221225472L; // 3GB
+    // lmdbConfig.setTripleDBSize(initialDBSize);
+    // lmdbConfig.setValueDBSize(initialDBSize);
+
     SailRepositoryConfig sailConfig = new SailRepositoryConfig(lmdbConfig);
     RepositoryConfig repositoryConfig = new RepositoryConfig(repositoryId, sailConfig);
     this.repositoryManager.addRepositoryConfig(repositoryConfig);
-  }
-
-  /**
-   * Deletes a repository with the given params
-   *
-   * @param repositoryId Id of the repository
-   * @throws IllegalArgumentException If the given params are not a valid repository
-   */
-  public void deleteRepository(String repositoryId)
-      throws IllegalArgumentException {
-    if (!this.repositoryManager.removeRepository(repositoryId)) {
-      throw new IllegalArgumentException("Repository not found.");
-    }
   }
 
   /**
@@ -96,8 +84,7 @@ public class RepositoryUtils {
    * @throws RepositoryConfigException If no {@link Repository} could be created due to invalid or
    *     incomplete configuration data.
    */
-  public RepositoryConnection getConnection(String repositoryId)
-      throws RepositoryConfigException {
+  public RepositoryConnection getConnection(String repositoryId) throws RepositoryConfigException {
     Repository repo = getRepository(repositoryId);
     if (repo != null) {
       return repo.getConnection();
