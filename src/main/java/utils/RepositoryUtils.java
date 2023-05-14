@@ -34,7 +34,7 @@ public class RepositoryUtils {
 
   /**
    * Creates a new repository with the given params. It will generate a new {@link RepositoryConfig}
-   * for it and add it.ﬂ
+   * for it and add it.
    *
    * @param repositoryId Id of repository
    * @throws IllegalArgumentException If the given params are already a repo

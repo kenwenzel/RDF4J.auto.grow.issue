@@ -16,12 +16,8 @@ import utils.RepositoryUtils;
 
 public class Application {
   public static final String RDF_4_J_SERVER = "http://localhost:8080/rdf4j-server";
-
   public static final String IFC_FILE = "Week_37_11_sept_IFC_Schependomlaan_incl_planningsdata.ifc";
-  public static final String IFC_FILE_UPDATED =
-      "Week_37_11_sept_IFC_Schependomlaan_incl_planningsdata2.ifc";
   public static final String IFC_PATH = "./IFC/" + IFC_FILE;
-  public static final String IFC_PATH_UPDATED = "./IFC/" + IFC_FILE_UPDATED;
   public static final String REPOSITORY_ID = "demo_ifc";
 
   public static void main(String[] args) {
@@ -63,26 +59,15 @@ public class Application {
       connection.commit();
       logMessage("First transaction committed");
 
-      // updated ifc model
-      logMessage("Loading updated ifc model");
-      String ifcModelUpdated =
-          Files.readString(Path.of(IFC_PATH_UPDATED), Charset.defaultCharset());
-      if (ifcModelUpdated == null) {
-        logMessage("ifcModelUpdated is null");
-        return;
-      }
 
-      logMessage("Converting updated ifc model to rdf");
-      String rdfModelUpdated = converter.toRdf(ifcModelUpdated);
-
-      logMessage("Writing updated named graph");
+      logMessage("Beginning second transaction");
       connection.begin();
 
       logMessage("Clearing context");
       connection.clear(context);
 
       logMessage("Adding data to connection");
-      inputStream = new ByteArrayInputStream(rdfModelUpdated.getBytes());
+      inputStream = new ByteArrayInputStream(rdfModel.getBytes());
       connection.add(inputStream, RDFFormat.TURTLE, context);
 
       logMessage("Committing second transaction");

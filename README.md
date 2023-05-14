@@ -12,31 +12,34 @@ This repository contains a 'minimal' example to reproduce the auto grow issue in
 If the port 8080 is already in use, please adapt the command above and Line 18 in https://github.com/Philipp-p/RDF4J.auto.grow.issue/blob/1c86f3354b6240a07cb6ac704cdc06304d6faa71/src/main/java/demo/Application.java#L18.
 
 ## Expected behavior
-The Application should convert a rather large IFC file to and RDF model and commit it to the RDF4J repository. Afterwards that the context wil be deleted and a lightly altered version of the first file will (only minor change in one line) be again converted and added to the repository. This should work without any issues.
+The Application should convert a rather large IFC file to and RDF model and commit it to the RDF4J repository. Afterwards that the context wil be deleted and the same model will be added to the repository. This should work without any issues.
 
 ## Actual behavior
-The Application will convert the first file and add it to the repository. Afterwards the context will be deleted and the second file will be converted and added to the repository. This will fail during the commit of the second transaction with the following error message:
+The Application will convert a rather large IFC file and add it to the repository. Afterwards the context will be deleted and the same model added again to the repository. This will fail during the commit of the second transaction with the following error message:
 ```java
  WARN [main] (SPARQLProtocolSession.java:1228) - Server reports problem: null (enable debug logging for full details)
-org.eclipse.rdf4j.repository.RepositoryException: Transaction handling error: org.eclipse.rdf4j.repository.RepositoryException: org.eclipse.rdf4j.sail.SailException: java.io.IOException: MDB_MAP_FULL: Environment mapsize limit reached
+        org.eclipse.rdf4j.repository.RepositoryException: Transaction handling error: org.eclipse.rdf4j.repository.RepositoryException: org.eclipse.rdf4j.sail.SailException: java.io.IOException: MDB_MAP_FULL: Environment mapsize limit reached
         at org.eclipse.rdf4j.http.client.SPARQLProtocolSession.execute(SPARQLProtocolSession.java:1095)
         at org.eclipse.rdf4j.http.client.RDF4JProtocolSession.commitTransaction(RDF4JProtocolSession.java:732)
         at org.eclipse.rdf4j.repository.http.HTTPRepositoryConnection.commit(HTTPRepositoryConnection.java:327)
-        at demo.Application.main(Application.java:89)
- WARN [main] (HTTPRepositoryConnection.java:359) - Rolling back transaction due to connection close
-java.lang.Throwable
+        at demo.Application.main(Application.java:74)
+        WARN [main] (HTTPRepositoryConnection.java:359) - Rolling back transaction due to connection close
+        java.lang.Throwable
         at org.eclipse.rdf4j.repository.http.HTTPRepositoryConnection.close(HTTPRepositoryConnection.java:359)
-        at demo.Application.main(Application.java:97)
- WARN [rdf4j-pingScheduler] (SPARQLProtocolSession.java:1228) - Server reports problem: null (enable debug logging for full details)
- WARN [rdf4j-pingScheduler] (RDF4JProtocolSession.java:822) - Failed to ping transaction
- WARN [main] (SPARQLProtocolSession.java:1228) - Server reports problem: null (enable debug logging for full details)
-Exception in thread "main" org.eclipse.rdf4j.repository.RepositoryException: transaction with id 87fe3099-5aa9-41e5-a1df-2e84f763e75a not registered.
+        at demo.Application.main(Application.java:82)
+        Exception in thread "main" java.lang.RuntimeException: org.eclipse.rdf4j.repository.RepositoryException: Transaction handling error: org.eclipse.rdf4j.repository.RepositoryException: org.eclipse.rdf4j.sail.SailException: java.io.IOException: MDB_MAP_FULL: Environment mapsize limit reached
+        at demo.Application.main(Application.java:84)
+        Caused by: org.eclipse.rdf4j.repository.RepositoryException: Transaction handling error: org.eclipse.rdf4j.repository.RepositoryException: org.eclipse.rdf4j.sail.SailException: java.io.IOException: MDB_MAP_FULL: Environment mapsize limit reached
         at org.eclipse.rdf4j.http.client.SPARQLProtocolSession.execute(SPARQLProtocolSession.java:1095)
-        at org.eclipse.rdf4j.http.client.RDF4JProtocolSession.rollbackTransaction(RDF4JProtocolSession.java:768)
-        at org.eclipse.rdf4j.repository.http.HTTPRepositoryConnection.rollback(HTTPRepositoryConnection.java:346)
-        at org.eclipse.rdf4j.repository.http.HTTPRepositoryConnection.close(HTTPRepositoryConnection.java:360)
-        at demo.Application.main(Application.java:97)
+        at org.eclipse.rdf4j.http.client.RDF4JProtocolSession.commitTransaction(RDF4JProtocolSession.java:732)
+        Caused by: org.eclipse.rdf4j.repository.RepositoryException: Transaction handling error: org.eclipse.rdf4j.repository.RepositoryException: org.eclipse.rdf4j.sail.SailException: java.io.IOException: MDB_MAP_FULL: Environment mapsize limit reached
+
+        at org.eclipse.rdf4j.repository.http.HTTPRepositoryConnection.commit(HTTPRepositoryConnection.java:327)
+        at demo.Application.main(Application.java:74)
 ```
+
+The container still runs after this error and the workbench is accessible, but the repository just created is in an inconsistent state.
+
 This happens on a PC with 32GB of RAM and an AMD Ryzen 7 5800X running Pop!_OS 22.04 very time and also on a similar Debian 11 server.
 
 On an 2018 MacBook Pro with 32GB of RAM and an Intel Core I7-8750H the first transaction already fails during the commit with the following error message:
@@ -54,7 +57,7 @@ org.apache.http.client.ClientProtocolException
         at org.eclipse.rdf4j.http.client.RDF4JProtocolSession.upload(RDF4JProtocolSession.java:917)
         at org.eclipse.rdf4j.repository.http.HTTPRepositoryConnection.add(HTTPRepositoryConnection.java:447)
         at org.eclipse.rdf4j.repository.RepositoryConnection.add(RepositoryConnection.java:696)
-        at demo.Application.main(Application.java:60)
+        at demo.Application.main(Application.java:56)
 Caused by: org.apache.http.client.NonRepeatableRequestException: Cannot retry request with a non-repeatable request entity
         at org.apache.http.impl.execchain.RetryExec.execute(RetryExec.java:108)
         at org.apache.http.impl.execchain.ServiceUnavailableRetryExec.execute(ServiceUnavailableRetryExec.java:85)
@@ -84,13 +87,13 @@ Caused by: java.net.SocketException: Broken pipe
  WARN [main] (HTTPRepositoryConnection.java:359) - Rolling back transaction due to connection close
 java.lang.Throwable
         at org.eclipse.rdf4j.repository.http.HTTPRepositoryConnection.close(HTTPRepositoryConnection.java:359)
-        at demo.Application.main(Application.java:97)
+        at demo.Application.main(Application.java:82)
  WARN [main] (SharedHttpClientSessionManager.java:102) - Closing stale connection
  WARN [rdf4j-pingScheduler] (RDF4JProtocolSession.java:822) - Failed to ping transaction
 Exception in thread "main" org.eclipse.rdf4j.repository.RepositoryException: java.net.SocketException: Connection reset
         at org.eclipse.rdf4j.repository.http.HTTPRepositoryConnection.rollback(HTTPRepositoryConnection.java:351)
         at org.eclipse.rdf4j.repository.http.HTTPRepositoryConnection.close(HTTPRepositoryConnection.java:360)
-        at demo.Application.main(Application.java:97)
+        at demo.Application.main(Application.java:82)
 Caused by: java.net.SocketException: Connection reset
         at java.base/sun.nio.ch.NioSocketImpl.implRead(NioSocketImpl.java:320)
         at java.base/sun.nio.ch.NioSocketImpl.read(NioSocketImpl.java:347)
@@ -126,4 +129,4 @@ This issue does not occur when the line https://github.com/Philipp-p/RDF4J.auto.
 However, it is rather puzzling why the same code exhibits a different behaviour on a laptop than on a PC/server.
 
 ## Proof of concept for the code in general
-The code runs also without any issues when instead of the large IFC files the smaller ones ```BasicWall.ifc``` and ```BasicWall2.ifc``` are used.
+The code runs also without any issues when instead of the large IFC files the smaller one ```BasicWall.ifc``` is used.
