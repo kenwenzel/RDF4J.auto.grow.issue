@@ -38,7 +38,9 @@ The Application will convert a rather large IFC file and add it to the repositor
         at demo.Application.main(Application.java:74)
 ```
 
-The container still runs after this error and the workbench is accessible, but the repository just created is in an inconsistent state.
+The container still runs after this error and the workbench is accessible, but the repository just created is in an inconsistent state. If your try for example to delete the repository, the workbench will throw an error:
+
+![repo error](./pic/repo_after.png)
 
 This happens on a PC with 32GB of RAM and an AMD Ryzen 7 5800X running Pop!_OS 22.04 very time and also on a similar Debian 11 server.
 
