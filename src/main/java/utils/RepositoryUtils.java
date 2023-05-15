@@ -1,9 +1,12 @@
 package utils;
 
+import java.io.File;
+
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.config.RepositoryConfig;
 import org.eclipse.rdf4j.repository.config.RepositoryConfigException;
+import org.eclipse.rdf4j.repository.manager.LocalRepositoryManager;
 import org.eclipse.rdf4j.repository.manager.RepositoryManager;
 import org.eclipse.rdf4j.repository.manager.RepositoryProvider;
 import org.eclipse.rdf4j.repository.sail.config.SailRepositoryConfig;
@@ -14,9 +17,9 @@ public class RepositoryUtils {
   private final RepositoryManager repositoryManager;
 
   /** Generates a new {@link RepositoryUtils} and primes the connection to the RDF4J Server */
-  public RepositoryUtils(String rdf4jServerURL) {
+  public RepositoryUtils(File rdf4jServerURL) {
     // uses RepositoryProvider to utilize a builtin shutdown hook
-    this.repositoryManager = RepositoryProvider.getRepositoryManager(rdf4jServerURL);
+    this.repositoryManager = new LocalRepositoryManager(rdf4jServerURL);
     this.repositoryManager.init();
   }
 

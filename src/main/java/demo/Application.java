@@ -2,20 +2,27 @@ package demo;
 
 import converter.IfcConverter;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+
+import org.eclipse.rdf4j.common.transaction.IsolationLevels;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.rio.RDFFormat;
+
+import converter.rdf2ifc.IFC2RDFConverter;
 import utils.RepositoryUtils;
 
 public class Application {
-  public static final String RDF_4_J_SERVER = "http://localhost:8080/rdf4j-server";
+  // public static final String RDF_4_J_SERVER = "http://localhost:8080/rdf4j-server";
   public static final String IFC_FILE = "Week_37_11_sept_IFC_Schependomlaan_incl_planningsdata.ifc";
   public static final String IFC_PATH = "./IFC/" + IFC_FILE;
   public static final String REPOSITORY_ID = "demo_ifc";
@@ -33,10 +40,17 @@ public class Application {
       }
 
       logMessage("Converting ifc model to rdf");
-      IfcConverter converter = new IfcConverter();
-      String rdfModel = converter.toRdf(ifcModel);
+      File ifcTtlFile = new File(IFC_PATH + ".ttl");
+      if (!ifcTtlFile.exists()) {
+        IFC2RDFConverter ifc2RDFConverter = new IFC2RDFConverter();
+        FileOutputStream outputStream = new FileOutputStream(ifcTtlFile);
+        ifc2RDFConverter.convert(ifcModel, outputStream, null, null, null, false, false, false);
+        outputStream.close();
+      }
 
-      RepositoryUtils repositoryUtils = new RepositoryUtils(RDF_4_J_SERVER);
+      File repositoryRoot = new File("/tmp/test-ifc");
+      repositoryRoot.mkdir();
+      RepositoryUtils repositoryUtils = new RepositoryUtils(repositoryRoot);
       if (!repositoryUtils.exists(REPOSITORY_ID)) {
         logMessage("Creating repository");
         repositoryUtils.createRepository(REPOSITORY_ID);
@@ -47,13 +61,12 @@ public class Application {
       connection = repositoryUtils.getConnection(REPOSITORY_ID);
 
       logMessage("First transaction start");
-      connection.begin();
+      connection.begin(IsolationLevels.NONE);
 
       logMessage("Adding data to connection");
       var factory = SimpleValueFactory.getInstance();
       IRI context = factory.createIRI(graph);
-      InputStream inputStream = new ByteArrayInputStream(rdfModel.getBytes());
-      connection.add(inputStream, RDFFormat.TURTLE, context);
+      connection.add(ifcTtlFile, RDFFormat.TURTLE, context);
 
       logMessage("Committing first transaction");
       connection.commit();
@@ -61,14 +74,13 @@ public class Application {
 
 
       logMessage("Beginning second transaction");
-      connection.begin();
+      connection.begin(IsolationLevels.NONE);
 
       logMessage("Clearing context");
       connection.clear(context);
 
       logMessage("Adding data to connection");
-      inputStream = new ByteArrayInputStream(rdfModel.getBytes());
-      connection.add(inputStream, RDFFormat.TURTLE, context);
+      connection.add(ifcTtlFile, RDFFormat.TURTLE, context);
 
       logMessage("Committing second transaction");
       connection.commit();
