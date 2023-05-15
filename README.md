@@ -44,7 +44,7 @@ The container still runs after this error and the workbench is accessible, but t
 
 This happens on a PC with 32GB of RAM and an AMD Ryzen 7 5800X running Pop!_OS 22.04 very time and also on a similar Debian 11 server.
 
-On an 2018 MacBook Pro with 32GB of RAM and an Intel Core I7-8750H the first transaction already fails during the commit with the following error message:
+On an 2018 MacBook Pro with 32GB of RAM and an Intel Core I7-8750H running macOS 13.3.1 the first transaction already fails during the ```connection.add()``` call with the following error message:
 ```java
 WARN [rdf4j-pingScheduler] (SharedHttpClientSessionManager.java:102) - Closing stale connection
  WARN [main] (SharedHttpClientSessionManager.java:102) - Closing stale connection
@@ -124,11 +124,11 @@ Caused by: java.net.SocketException: Connection reset
         at org.eclipse.rdf4j.repository.http.HTTPRepositoryConnection.rollback(HTTPRepositoryConnection.java:346)
         ... 2 more
 ```
-Furthermore, the container crashes in this case with nothing usefully in the logs since it simply stops after ```Server startup in X ms``` message.
+Furthermore, the container crashes in this case with nothing usefully in the logs since it simply stops after ```Server startup in X ms``` message. If you restart the container, everything will work normal and an empty repository remains.
 
 ## "Fixing" the issue
-This issue does not occur when the line https://github.com/Philipp-p/RDF4J.auto.grow.issue/blob/1c86f3354b6240a07cb6ac704cdc06304d6faa71/src/main/java/utils/RepositoryUtils.java#L52 and following are not commented out. They increase the initial size of the DB. This and the exception thrown in the first case, hints that the issue might be linked to the auto grow function. 
-However, it is rather puzzling why the same code exhibits a different behaviour on a laptop than on a PC/server.
+This issue does not occur when the line https://github.com/Philipp-p/RDF4J.auto.grow.issue/blob/1c86f3354b6240a07cb6ac704cdc06304d6faa71/src/main/java/utils/RepositoryUtils.java#L52 and following are not commented out when executed on the Linux machines. They increase the initial size of the DB. This and the exception thrown in the first case, hints that the issue might be linked to the auto grow function. 
+However, it is rather puzzling why the same code exhibits a different behaviour on a laptop than on a PC/server, but this can be also linked to difference of the podman implementation on Linux and macOS or point to a completely different issue. 
 
 ## Proof of concept for the code in general
-The code runs also without any issues when instead of the large IFC files the smaller one ```BasicWall.ifc``` is used.
+The code runs without any issues when instead of the large IFC file the smaller one ```BasicWall.ifc``` in the sample folder is used.
